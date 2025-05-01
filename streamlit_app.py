@@ -78,6 +78,6 @@ def main() -> None:
                 )
 
 if __name__ == "__main__":
-    # run it via streamlit run streamlit_app.py 
+    # run it via streamlit run streamlit_app.py --server.enableCORS false --server.enableXsrfProtection false
     main()    
 # end main
