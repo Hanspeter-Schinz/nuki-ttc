@@ -73,8 +73,9 @@ def main() -> None:
             st.write(chart)
 
         st.subheader(body=f'Nuki Access Statistics Chart Per Date From {from_date} To {to_date}')
-        # modifying df.date to only have dates without times. Otherwise every date/time entry has excact 1 access element
-        df.date = pd.to_datetime(df.date, utc=True).dt.date 
+        TZ='Europe/Zurich' # need local timezone (Zurich) for dates
+        # modifying df.date to only have dates without times. Otherwise every date/time entry will be broken down to seconds level (we want day level)
+        df.date = pd.to_datetime(df.date, utc=True).map(lambda x: x.tz_convert(TZ)).dt.date 
         df_grouped_by_date = df.groupby(by=df.date, group_keys=False, as_index=False).count()
         total_number_of_actions = sum(df_grouped_by_date[KEY_NUKI_ACTION])
         total_number_of_dates   = len(df_grouped_by_date)
