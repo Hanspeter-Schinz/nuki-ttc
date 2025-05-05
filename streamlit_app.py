@@ -51,6 +51,9 @@ def main() -> None:
         st.metric(label="Current Number Of Records:", value=len(filtered_df), help='Nunber of records in selected date range')
         st.write(filtered_df)
                 
+        GRAPH_FONT_SIZE:int = 15
+        COLOR_X:str = 'red'
+        COLOR_Y:str = 'green'        
         st.subheader(body=f'Nuki Access Statistics Chart Per Name From {from_date} To {to_date}')
         df_grouped_by_name = df.groupby(KEY_TTVZ_MEMBER, as_index=False).count() # we need index as normal column for alt.Chart()
         total_number_of_actions = sum(df_grouped_by_name[KEY_NUKI_ACTION])
@@ -59,11 +62,13 @@ def main() -> None:
             chart = alt.Chart(data=df_grouped_by_name[:]).mark_bar().encode(
                 alt.X(shorthand=KEY_NUKI_ACTION
                     , title=f'Nuki Accesses: {total_number_of_actions}'
+                    , axis=alt.Axis(labelColor=COLOR_X, labelFontSize=GRAPH_FONT_SIZE, titleColor=COLOR_X, titleFontSize=GRAPH_FONT_SIZE)
                     #, axis=alt.Axis(ticks=False, tickMinStep=10) # don't know for what
                 ),
                 alt.Y(shorthand=KEY_TTVZ_MEMBER
                     , sort='-x'
                     , title=f'TTVZ Members + Some Memberless Triggers: {total_number_of_members}'
+                    , axis=alt.Axis(labelColor=COLOR_Y, labelFontSize=GRAPH_FONT_SIZE, titleColor=COLOR_Y, titleFontSize=GRAPH_FONT_SIZE, labelLimit=300)
                 ),
                 #color=alt.value("red"), # works (default is blue)
                 alt.Color(shorthand=KEY_NUKI_ACTION, type='nominal', legend=None), # legend with different colors for given key
@@ -81,11 +86,13 @@ def main() -> None:
         total_number_of_dates   = len(df_grouped_by_date)
         if st.button(label='Generate Date Bar Chart'):
             chart = alt.Chart(data=df_grouped_by_date[:]).mark_bar().encode(
-                alt.Y(shorthand=KEY_NUKI_ACTION
-                    , title=f'Nuki Accesses: {total_number_of_actions}'
-                ),
                 alt.X(shorthand=KEY_DATE
                     , title=f'Dates: {total_number_of_dates}'
+                    , axis=alt.Axis(labelColor=COLOR_X, labelFontSize=GRAPH_FONT_SIZE, titleColor=COLOR_X, titleFontSize=GRAPH_FONT_SIZE)
+                ),
+                alt.Y(shorthand=KEY_NUKI_ACTION
+                    , title=f'Nuki Accesses: {total_number_of_actions}'
+                    , axis=alt.Axis(labelColor=COLOR_Y, labelFontSize=GRAPH_FONT_SIZE, titleColor=COLOR_Y, titleFontSize=GRAPH_FONT_SIZE)
                 ),
                 alt.Color(shorthand=KEY_NUKI_ACTION, type='nominal', legend=None), # legend with different colors for given key
             )
