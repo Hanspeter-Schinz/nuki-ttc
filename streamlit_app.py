@@ -1,4 +1,5 @@
 import streamlit as st
+import altair as alt
 import pandas as pd
 import datetime
 
@@ -61,7 +62,7 @@ def main() -> None:
                 
         st.subheader(body='Nuki Access Statistics Chart')
         #df_grouped = df.groupby(TTVZ_MEMBER).count().sort_values(by=NUKI_ACTION, ascending=False)
-        df_grouped = df.groupby(TTVZ_MEMBER).count()
+        df_grouped = df.groupby(TTVZ_MEMBER, as_index=False).count() # we need index as normal column for alt.Chart()
         #df_grouped = df.groupby(TTVZ_MEMBER, as_index=False).count().sort_values(by=NUKI_ACTION, ascending=False).reset_index(drop=True)
         #df_grouped = df.groupby(TTVZ_MEMBER, as_index=False).count().reset_index(drop=True)
         #df_grouped.set_index(df_grouped.name)
@@ -69,13 +70,27 @@ def main() -> None:
         total_number_of_actions = sum(df_grouped[NUKI_ACTION])
         total_number_of_members = len(df_grouped)
         if st.button(label='Generate Bar Chart'):
-            # wtf it is not sorted !!!!
-            st.bar_chart(data=df_grouped[:],
-                x=None, x_label=f'Nuki Accesses ({total_number_of_members})',
-                #x=f'{TTVZ_MEMBER}', x_label=f'Nuki Accesses ({total_number_of_members})',
-                y=f'{NUKI_ACTION}', y_label=f'TTVZ Members + Some Memberless Triggers {total_number_of_members}',
-                horizontal=True
-                )
+            # wtf it is not sorted (seems to be a long during bug in bar_chart()) !!!!
+            #st.bar_chart(data=df_grouped[:10],
+            #    x=None, x_label=f'Nuki Accesses ({total_number_of_members})',
+            #    #x=f'{TTVZ_MEMBER}', x_label=f'Nuki Accesses ({total_number_of_actions})',
+            #    y=f'{NUKI_ACTION}', y_label=f'TTVZ Members + Some Memberless Triggers {total_number_of_members}',
+            #    horizontal=True
+            #    )
+
+            chart = alt.Chart(data=df_grouped).mark_bar().encode(
+                alt.X(shorthand=NUKI_ACTION
+                    , title=f'Nuki Accesses: {total_number_of_actions}'
+                    #, axis=alt.Axis(ticks=False, tickMinStep=10) # don't know for what
+                ),
+                alt.Y(shorthand=TTVZ_MEMBER
+                    , sort='-x'
+                    , title=f'TTVZ Members + Some Memberless Triggers: {total_number_of_members}'
+                ),
+                #color=alt.value("red"), # works (default is blue)
+                #alt.Color(type='nominal'), # no idea for what ????
+            )
+            st.write(chart)
 
 if __name__ == "__main__":
     # run it via streamlit run streamlit_app.py --server.enableCORS false --server.enableXsrfProtection false
