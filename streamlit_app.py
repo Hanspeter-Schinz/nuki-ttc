@@ -75,7 +75,7 @@ def main() -> None:
         st.subheader(body=f'Nuki Access Statistics Chart Per Date From {from_date} To {to_date}')
         TZ='Europe/Zurich' # need local timezone (Zurich) for dates
         # modifying df.date to only have dates without times. Otherwise every date/time entry will be broken down to seconds level (we want day level)
-        df.date = pd.to_datetime(df.date, utc=True).map(lambda x: x.tz_convert(TZ)).dt.date 
+        df.date = pd.to_datetime(df.date, utc=True).map(lambda x: x.tz_convert(TZ)).dt.date.astype(str)
         df_grouped_by_date = df.groupby(by=df.date, group_keys=False, as_index=False).count()
         total_number_of_actions = sum(df_grouped_by_date[KEY_NUKI_ACTION])
         total_number_of_dates   = len(df_grouped_by_date)
@@ -85,7 +85,6 @@ def main() -> None:
                     , title=f'Nuki Accesses: {total_number_of_actions}'
                 ),
                 alt.X(shorthand=KEY_DATE
-                #alt.X(shorthand=f'{KEY_DATE}:T'
                     , title=f'Dates: {total_number_of_dates}'
                 ),
                 alt.Color(shorthand=KEY_NUKI_ACTION, type='nominal', legend=None), # legend with different colors for given key
