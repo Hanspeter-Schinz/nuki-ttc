@@ -47,7 +47,7 @@ def main() -> None:
         columns.remove(KEY_DATE) # date is the main selector and already handled above
         selected_column = st_in.selectbox('Select Column to filter by', columns)
         unique_values   = df_in[selected_column].unique()
-        selected_value  = st_in.selectbox('Select value', unique_values)
+        selected_value  = st_in.selectbox('Select value', sorted(unique_values))
         df_in = df_in[df_in[selected_column] == selected_value]
         st.metric(label="Current Number Of Records:", value=len(df_in), help=f"Nunber of records in filter ('{selected_column}' == '{selected_value}')")
         st.write(df_in)
@@ -78,7 +78,8 @@ def main() -> None:
         df_grouped_by_name = df.groupby(KEY_TTVZ_MEMBER, as_index=False).count() # we need index as normal column for alt.Chart()
         total_number_of_actions = sum(df_grouped_by_name[KEY_NUKI_ACTION])
         total_number_of_members = len(df_grouped_by_name)
-        if st.button(label='Generate Name Bar Chart'):
+        #if st.button(label='Generate Name Bar Chart'):
+        if True:
             chart = alt.Chart(data=df_grouped_by_name[:]).mark_bar().encode(
                 alt.X(shorthand=KEY_NUKI_ACTION
                     , title=f'Nuki Accesses: {total_number_of_actions}'
@@ -102,7 +103,8 @@ def main() -> None:
         df_grouped_by_date = df.groupby(by=df[KEY_DATE], group_keys=False, as_index=False).count()
         total_number_of_actions = sum(df_grouped_by_date[KEY_NUKI_ACTION])
         total_number_of_dates   = len(df_grouped_by_date)
-        if st.button(label='Generate Date Bar Chart'):
+        #if st.button(label='Generate Date Bar Chart'):
+        if True:
             chart = alt.Chart(data=df_grouped_by_date[:]).mark_bar().encode(
                 alt.X(shorthand=KEY_DATE
                     , title=f'Dates: {total_number_of_dates}'
