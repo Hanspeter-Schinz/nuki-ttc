@@ -3,6 +3,8 @@ import altair as alt
 import pandas as pd
 import datetime
 
+## first trial to use git commit etc. from another computer
+
 CSV_ENCODING:str = 'utf16'
 CSV_SEP:str      = '\t'
 
